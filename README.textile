@@ -1,0 +1,92 @@
+h1.  Sprockets
+
+A PHP5 port of Sprockets - the "ruby library":http://getsprockets.org/installation_and_usage for JavaScript dependency management and concatenation.
+
+h2. Credentials
+
+Full credit goes to
+* "Stuart Loxton":http://github.com/stuartloxton/php-sprockets
+* "Kjell Bublitz":http://github.com/m3nt0r/php-sprockets
+
+who created and improved php-sprockets in the first place.
+
+Thanks to "Sam Stephenson":http://github.com/sstephenson/sprockets for the initial concept of JavaScript dependency management,
+
+h2. Differences
+
+... from the implementation by Kjell
+
+* added first steps in unit tests (PHPunit)  -- using original ruby sprockets test cases
+* added a command @requireonce@  -- allows real-world dependency management (just like ruby sprockets), e.g. for object-oriented JS with each class organized in a separate files. You would not want to see repeated inclusion in this case (but you still can using @require@).
+* added option __customCommandsPath__  -- allows using custom commands without messing with the library
+* changed application logic to create every command only once -- saves memory and allows features like requireonce
+
+h2. Demo
+
+Consider the following demo code to be acceptable in your development system, or for playing around -- this is the basis of what it takes to get Sprockets up and running. The scenarios is, that you -- just like we here -- have a library folder where you drop Sprockets in (say __lib/Sprockets__), and a document root of your application (say __htdocs__, just like our __demo__ here). The __.htaccess__ file in the document root causes requests for any __.js__ files to be handled by __sprocketize.php__.
+
+If you are having problems with the __.htaccess__ file, please see the "Apache mod_rewrite documentation":http://httpd.apache.org/docs/2.0/mod/mod_rewrite.html.
+
+Please see __Use cases__ for more sophisticated methods of using Sprockets in a productive environment.
+
+*.htaccess*
+
+bc. RewriteEngine On
+RewriteRule \.js$ sprocketize.php [QSA]
+
+*sprocketize.php*
+
+bc. require_once('../lib/Sprockets.php');	// requiring library
+$filePath = preg_replace('/\?.*/', '', $_SERVER['REQUEST_URI']);
+$sprockets = new Sprockets(
+	$filePath,
+	array(
+		'baseUri' => '/php-sprockets',
+		'autoRender' => true
+	)
+);
+
+<DOCUMENT_ROOT>/javascript/lorem.js should show the contents of both lorem.js as well as ipsum.js.
+
+h2. Use cases
+
+This is a rough sketch on how you could use Sprockets integrated into your deployment process -- do not copy-paste this code and expect it to work -- it cannot, simply because not all scripts and tools mentioned are contained within Sprockets. Consider it pseudo-code.
+
+*deployment.sh*
+
+bc. #!bin/bash
+DIRECTORY=`mktemp -d` || exit 1
+svn checkout -q http://myrepo $DIRECTORY
+# create js package for live system
+php $DIRECTORY/bin/jsPacking.php
+# do some more magic
+php $DIRECTORY/bin/rmUnitTests.php
+# ...
+# copy project to live server
+rsync $DIRECTORY me@live.server.com:/coolproject
+
+*jsPacking.php*
+
+bc. // a definition file listing all JS files needed
+$sourceFile = JS_PATH . SPROCKETS_SOURCE;
+// the JS file the live app points to
+$targetFile = JS_PATH . SPROCKETS_TARGET;
+$sprocket = new Sprockets(
+	$sourceFile,
+	array(
+		'debugMode' => true,	// avoid creating cache file
+		'autoRender' => false,	// do not echo the result
+	)
+);
+$content = $sprocket->render(true);
+$output = JSMin::minify($content);
+// write file with all commands executed (requires, ...), and minified
+file_put_contents($targetFile, $output);
+
+h2. Todo
+
+Honestly I don't like the idea of the integrated JSMin(tm) and CSSMin(tm) too much - these are separate libraries and should be treated as such. Eventually they are going to be removed.
+As, in a real world scenario (production mode), running Sprockets at runtime is not a good idea anyway, these tools are better integrated into the deployment process by a simple bash script handling the process of a) running Sprockets b) applying JSMin(tm) c) more magic...
+
+* remove integration of JSMin(tm) and CSSMin(tm)
+* implement missing unittests

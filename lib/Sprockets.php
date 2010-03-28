@@ -70,8 +70,8 @@ class Sprockets
 	public function __construct($file, array $options = array()) {
 
 		$options = array_merge(array(
-			'baseUri' => '/php-sprockets',
-			'baseFolder' => '/js',
+			'baseUri' => '/Sprockets',
+			'baseFolder' => '/javascript',
 			'assetFolder' => '..',
 			'debugMode' => false,
 			'autoRender' => false,
@@ -412,6 +412,8 @@ class Sprockets
 	/**
 	 * File Not Found - Sends a 404 Header if the file does not exist.
 	 * Just overwrite this if you want to do something else.
+	 *
+	 * @throws SprocketsFileNotFoundException
 	 *
 	 * @return void
 	 */

@@ -46,10 +46,25 @@ class SprocketsTest extends PHPUnit_Framework_TestCase {
 	}
 
 	protected function getNewSprockets($file) {
+		$fileWithPath =
+			dirname(__FILE__) .
+			DIRECTORY_SEPARATOR .
+			'fixtures' .
+			DIRECTORY_SEPARATOR .
+			$file;
+
+		$baseFolder =
+			dirname(__FILE__) .
+			DIRECTORY_SEPARATOR .
+			'fixtures' .
+			DIRECTORY_SEPARATOR .
+			'src';
+
 		return new Sprockets(
-			dirname(__FILE__).DIRECTORY_SEPARATOR.'fixtures'.DIRECTORY_SEPARATOR.$file,
+			$fileWithPath,
 			array(
-				'baseFolder' => dirname(__FILE__).'/fixtures/src',
+				'baseUri' => '../',
+				'baseFolder' => $baseFolder,
 				'debugMode' => true,
 				'autoRender' => false,
 			)
