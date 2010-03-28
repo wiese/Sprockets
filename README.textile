@@ -46,7 +46,8 @@ $sprockets = new Sprockets(
 	)
 );
 
-<DOCUMENT_ROOT>/javascript/lorem.js should show the contents of both lorem.js as well as ipsum.js.
+
+{__DOCUMENT ROOT__}/javascript/lorem.js should show the contents of both lorem.js as well as ipsum.js.
 
 h2. Use cases
 
