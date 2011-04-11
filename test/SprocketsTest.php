@@ -1,5 +1,4 @@
 <?php
-require_once 'PHPUnit/Framework.php';
 require_once dirname(__FILE__).'/../lib/Sprockets.php';
 
 class SprocketsTest extends PHPUnit_Framework_TestCase {
@@ -40,8 +39,9 @@ class SprocketsTest extends PHPUnit_Framework_TestCase {
 			'singleline_comments_should_be_removed_by_default.js'
 		);
 		$this->assertEquals(
-			"var lorem = 'ipsum';",
-			trim($sprockets->render(true))
+			"var lorem = 'ipsum';	// no way w/o real parser",
+			trim($sprockets->render(true)),
+			'accepting inline comments'
 		);
 	}
 

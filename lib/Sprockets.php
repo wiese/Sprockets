@@ -257,7 +257,9 @@ class Sprockets
 		$source = file_get_contents($this->_currentScope);
 
 		// Parse Commands
+
 		preg_match_all('/\/\/= ([a-z]+) ([^\n]+)/', $source, $matches);
+		//preg_match_all('@^\/\/=\s+([a-z]+)\s+([^\n]+)@m', $source, $matches);
 		foreach($matches[0] as $key => $match) {
 			$commandRaw = $matches[0][$key];
 			$commandName = $matches[1][$key];
@@ -320,12 +322,16 @@ class Sprockets
 	/**
 	 * Remove obsolete comments
 	 *
+	 * @tutorial Admitting defeat agains inline comments that do not occupy the
+	 * entire line - detectable but prone to error, e.g. in urls (http://) or
+	 * regular expressions (escaped backslashes, ...)
+	 *
 	 * @param string $source
 	 *
 	 * @return string
 	 */
 	protected function stripComments($source) {
-		return preg_replace('/\/\/([^\n]+)/', '', $source);
+		return preg_replace('@^\s*//([^\n]+)@', '', $source);
 	}
 
 	/**

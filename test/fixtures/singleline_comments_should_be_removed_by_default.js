@@ -1,2 +1,2 @@
 // i'm just an inline comment
-var lorem = 'ipsum';	// bit more tricky
+var lorem = 'ipsum';	// no way w/o real parser
